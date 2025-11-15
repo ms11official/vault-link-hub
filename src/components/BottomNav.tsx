@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Link2, Mail, MessageSquare, Lock, User, Globe } from "lucide-react";
+import { Home, FolderOpen, HardDrive, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const BottomNav = () => {
@@ -7,12 +7,9 @@ const BottomNav = () => {
 
   const navItems = [
     { path: "/", icon: Home, label: "Home" },
-    { path: "/links", icon: Link2, label: "Links" },
-    { path: "/emails", icon: Mail, label: "Emails" },
-    { path: "/messages", icon: MessageSquare, label: "Messages" },
-    { path: "/passwords", icon: Lock, label: "Passwords" },
-    { path: "/contacts", icon: User, label: "Contacts" },
-    { path: "/weburls", icon: Globe, label: "Web URLs" },
+    { path: "/categories", icon: FolderOpen, label: "Categories" },
+    { path: "/storage", icon: HardDrive, label: "Storage" },
+    { path: "/profile", icon: User, label: "Profile" },
   ];
 
   return (

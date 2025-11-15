@@ -10,6 +10,9 @@ import Messages from "./pages/Messages";
 import Passwords from "./pages/Passwords";
 import Contacts from "./pages/Contacts";
 import WebUrls from "./pages/WebUrls";
+import Categories from "./pages/Categories";
+import Storage from "./pages/Storage";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,9 @@ const App = () => (
           <Route path="/passwords" element={<Passwords />} />
           <Route path="/contacts" element={<Contacts />} />
           <Route path="/weburls" element={<WebUrls />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/storage" element={<Storage />} />
+          <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
