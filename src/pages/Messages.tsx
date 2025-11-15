@@ -4,6 +4,8 @@ import BottomNav from "@/components/BottomNav";
 import AddItemDialog from "@/components/AddItemDialog";
 import ItemCard from "@/components/ItemCard";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface Item {
   id: string;
@@ -59,7 +61,19 @@ const Messages = () => {
         </div>
 
         {loading ? (
-          <p className="text-center text-muted-foreground">Loading...</p>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <Skeleton className="h-6 w-32" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-24" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         ) : items.length === 0 ? (
           <p className="text-center text-muted-foreground">No messages yet. Add your first message!</p>
         ) : (

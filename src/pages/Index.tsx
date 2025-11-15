@@ -4,6 +4,7 @@ import BottomNav from "@/components/BottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link2, Mail, MessageSquare, Lock, User, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const [stats, setStats] = useState({
@@ -14,26 +15,31 @@ const Index = () => {
     contacts: 0,
     weburls: 0,
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  const fetchStats = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-      const types = ["link", "email", "message", "password", "contact", "weburl"];
-      const counts: any = {};
+    const types = ["link", "email", "message", "password", "contact", "weburl"];
+    const counts: any = {};
 
-      for (const type of types) {
-        const { count } = await supabase
-          .from("items")
-          .select("*", { count: "exact", head: true })
-          .eq("type", type);
-        
-        counts[type + "s"] = count || 0;
-      }
+    for (const type of types) {
+      const { count } = await supabase
+        .from("items")
+        .select("*", { count: "exact", head: true })
+        .eq("type", type);
+      
+      counts[type + "s"] = count || 0;
+    }
 
-      setStats(counts);
-    };
+    setStats(counts);
+    setLoading(false);
+  };
 
     fetchStats();
   }, []);
@@ -56,25 +62,39 @@ const Index = () => {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {categories.map((category) => {
-            const Icon = category.icon;
-            return (
-              <Link key={category.path} to={category.path}>
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-lg font-medium">{category.title}</CardTitle>
-                    <Icon className={`h-5 w-5 ${category.color}`} />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">{category.count}</div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {category.count === 1 ? "item" : "items"} stored
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
+          {loading ? (
+            [...Array(6)].map((_, i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <Skeleton className="h-6 w-32" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-10 w-20 mb-2" />
+                  <Skeleton className="h-4 w-24" />
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <Link key={category.path} to={category.path}>
+                  <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg font-medium">{category.title}</CardTitle>
+                      <Icon className={`h-5 w-5 ${category.color}`} />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold">{category.count}</div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {category.count === 1 ? "item" : "items"} stored
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })
+          )}
         </div>
       </div>
       <BottomNav />

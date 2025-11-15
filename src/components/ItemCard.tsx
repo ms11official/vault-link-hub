@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import CommentSection from "./CommentSection";
 
 interface ItemCardProps {
   id: string;
@@ -61,6 +62,7 @@ const ItemCard = ({ id, title, content, createdAt, onDelete }: ItemCardProps) =>
         <p className="text-xs text-muted-foreground mt-2">
           {new Date(createdAt).toLocaleDateString()}
         </p>
+        <CommentSection itemId={id} />
       </CardContent>
     </Card>
   );
