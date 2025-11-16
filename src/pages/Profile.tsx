@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import BottomNav from "@/components/BottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Calendar, Shield } from "lucide-react";
+import { Mail, Calendar, Shield, LogOut } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,6 +24,27 @@ const Profile = () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
     setLoading(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+
+      navigate("/auth");
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to logout",
+        variant: "destructive",
+      });
+    }
   };
 
   const getInitials = (email: string) => {
@@ -141,6 +167,15 @@ const Profile = () => {
                 </CardContent>
               </Card>
             </div>
+
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="w-full mt-6"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
           </>
         ) : (
           <Card>
