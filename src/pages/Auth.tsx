@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +20,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [isSignup, setIsSignup] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -173,11 +175,49 @@ const Auth = () => {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Welcome</CardTitle>
           <CardDescription className="text-center">
-            {otpSent ? "Enter the OTP sent to your email" : "Sign in or create an account"}
+            {isForgotPassword 
+              ? "Reset your password" 
+              : otpSent 
+              ? "Enter the OTP sent to your email" 
+              : "Sign in or create an account"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {!otpSent ? (
+          {isForgotPassword ? (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">Email</Label>
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <Button
+                className="w-full"
+                onClick={handleSendOtp}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  "Send Reset Code"
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setIsForgotPassword(false)}
+              >
+                Back to Login
+              </Button>
+            </div>
+          ) : !otpSent ? (
             <Tabs defaultValue="login" onValueChange={(value) => setIsSignup(value === "signup")}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
@@ -196,9 +236,8 @@ const Auth = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="login-password">Password</Label>
-                  <Input
+                  <PasswordInput
                     id="login-password"
-                    type="password"
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -218,6 +257,14 @@ const Auth = () => {
                     "Login"
                   )}
                 </Button>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="w-full"
+                  onClick={() => setIsForgotPassword(true)}
+                >
+                  Forgot Password?
+                </Button>
               </TabsContent>
               <TabsContent value="signup" className="space-y-4">
                 <div className="space-y-2">
@@ -232,9 +279,8 @@ const Auth = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
-                  <Input
+                  <PasswordInput
                     id="signup-password"
-                    type="password"
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
