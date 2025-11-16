@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
+import { PasswordInput } from "@/components/PasswordInput";
+import { Plus, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -17,8 +18,16 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [password, setPassword] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,11 +45,34 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
         return;
       }
 
+      let fileUrl = "";
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        const { error: uploadError, data } = await supabase.storage
+          .from('files')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('files')
+          .getPublicUrl(fileName);
+        
+        fileUrl = publicUrl;
+      }
+
+      const metadata: any = {};
+      if (password) metadata.password = password;
+      if (fileUrl) metadata.fileUrl = fileUrl;
+      if (file) metadata.fileName = file.name;
+
       const { error } = await supabase.from("items").insert({
         user_id: user.id,
         type,
         title,
-        content,
+        content: fileUrl || content,
+        metadata,
       });
 
       if (error) throw error;
@@ -52,6 +84,8 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
 
       setTitle("");
       setContent("");
+      setPassword("");
+      setFile(null);
       setOpen(false);
       onSuccess();
     } catch (error) {
@@ -104,6 +138,37 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
               required
             />
           </div>
+
+          {type === "contact" && (
+            <div className="space-y-2">
+              <Label htmlFor="file">Import Contact File (Optional)</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="file"
+                  type="file"
+                  accept=".vcf,.csv"
+                  onChange={handleFileChange}
+                />
+                <Upload className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+          )}
+
+          {type !== "contact" && (
+            <div className="space-y-2">
+              <Label htmlFor="file">Import File (Optional)</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="file"
+                  type="file"
+                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.txt"
+                  onChange={handleFileChange}
+                />
+                <Upload className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="content">Content</Label>
             <Textarea
@@ -111,9 +176,20 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={getPlaceholder()}
-              required
+              required={!file}
             />
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Password Protection (Optional)</Label>
+            <PasswordInput
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter password to protect this item"
+            />
+          </div>
+
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Adding..." : "Add Item"}
           </Button>
