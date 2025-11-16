@@ -66,8 +66,8 @@ const Auth = () => {
 
       setOtpSent(true);
       toast({
-        title: "Success",
-        description: "OTP sent to your email",
+        title: "OTP Sent!",
+        description: "Check your email for the 6-digit code. It expires in 10 minutes.",
       });
     } catch (error: any) {
       console.error('Error sending OTP:', error);
@@ -259,7 +259,10 @@ const Auth = () => {
           ) : (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Enter OTP</Label>
+                <Label>Enter the 6-digit OTP from your email</Label>
+                <p className="text-sm text-muted-foreground">
+                  Code sent to: {email}
+                </p>
                 <div className="flex justify-center">
                   <InputOTP
                     maxLength={6}
