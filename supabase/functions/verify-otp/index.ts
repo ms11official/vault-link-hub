@@ -24,6 +24,9 @@ serve(async (req) => {
     );
 
     // Verify OTP
+    console.log('Verifying OTP for email:', email);
+    console.log('Looking for OTP:', otp);
+    
     const { data: otpData, error: otpError } = await supabaseAdmin
       .from('otp_verifications')
       .select('*')
@@ -33,18 +36,31 @@ serve(async (req) => {
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (otpError || !otpData) {
-      console.error('OTP verification failed:', otpError);
+    if (otpError) {
+      console.error('Database error during OTP verification:', otpError);
       return new Response(
-        JSON.stringify({ error: 'Invalid or expired OTP' }),
+        JSON.stringify({ error: 'Failed to verify OTP' }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500,
+        }
+      );
+    }
+
+    if (!otpData) {
+      console.error('No matching OTP found for email:', email);
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired OTP. Please check the code and try again.' }),
         {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 400,
         }
       );
     }
+
+    console.log('OTP verified successfully');
 
     // Mark OTP as verified
     await supabaseAdmin
