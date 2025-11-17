@@ -4,11 +4,12 @@ import BottomNav from "@/components/BottomNav";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link2, Mail, MessageSquare, Lock, User, Globe, Clock, TrendingUp } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     links: 0,
     emails: 0,
@@ -19,7 +20,15 @@ const Index = () => {
   });
   const [loading, setLoading] = useState(true);
   const [recentItems, setRecentItems] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [recentCategories, setRecentCategories] = useState<any[]>([]);
+  const [heroText, setHeroText] = useState(0);
+
+  const heroTexts = [
+    "Store and manage your important information securely",
+    "End-to-end encryption for your peace of mind",
+    "Access your data anywhere, anytime",
+    "Organize everything in one secure place"
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,12 +57,38 @@ const Index = () => {
         .order("updated_at", { ascending: false })
         .limit(5);
 
+      // Calculate recent categories
+      const categoryMap = new Map();
+      recent?.forEach(item => {
+        const type = item.type + "s";
+        if (!categoryMap.has(type)) {
+          categoryMap.set(type, { type, count: 1, lastUsed: item.updated_at });
+        } else {
+          const existing = categoryMap.get(type);
+          existing.count++;
+        }
+      });
+
+      const recentCats = Array.from(categoryMap.entries())
+        .map(([type, data]) => ({ type, ...data }))
+        .sort((a, b) => new Date(b.lastUsed).getTime() - new Date(a.lastUsed).getTime())
+        .slice(0, 3);
+
       setStats(counts);
       setRecentItems(recent || []);
+      setRecentCategories(recentCats);
       setLoading(false);
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroText((prev) => (prev + 1) % heroTexts.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const categories = [
@@ -65,24 +100,54 @@ const Index = () => {
     { title: "Web URLs", icon: Globe, count: stats.weburls, path: "/weburls", color: "text-cyan-500" },
   ];
 
-  const filteredCategories = categories.filter(cat => 
-    cat.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   const totalItems = Object.values(stats).reduce((a: number, b: number) => a + b, 0);
+
+  const handleSearch = (query: string) => {
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <Navbar onSearch={setSearchQuery} />
+      <Navbar onSearch={handleSearch} />
       
       <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background rounded-lg p-8 border border-border">
-          <h1 className="text-4xl font-bold mb-2 text-foreground">Welcome to Your Secure Vault</h1>
-          <p className="text-muted-foreground text-lg">
-            Store and manage your important information securely with end-to-end encryption
+          <h1 className="text-4xl font-bold mb-2 text-foreground">Welcome to Databseplus</h1>
+          <p className="text-muted-foreground text-lg transition-opacity duration-500">
+            {heroTexts[heroText]}
           </p>
         </div>
+
+        {/* Recent Categories */}
+        {recentCategories.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold mb-4 text-foreground">Recently Used Categories</h2>
+            <div className="grid gap-4 md:grid-cols-3">
+              {recentCategories.map((cat) => {
+                const categoryInfo = categories.find(c => c.path.includes(cat.type));
+                if (!categoryInfo) return null;
+                const Icon = categoryInfo.icon;
+                return (
+                  <Link key={cat.type} to={categoryInfo.path}>
+                    <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-lg font-medium">{categoryInfo.title}</CardTitle>
+                        <Icon className={`h-5 w-5 ${categoryInfo.color}`} />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">{cat.count}</div>
+                        <p className="text-xs text-muted-foreground mt-1">items recently used</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Analytics Section */}
         <div className="grid gap-4 md:grid-cols-3">
@@ -165,7 +230,7 @@ const Index = () => {
                 </Card>
               ))
             ) : (
-              filteredCategories.map((category) => {
+              categories.map((category) => {
                 const Icon = category.icon;
                 return (
                   <Link key={category.path} to={category.path}>

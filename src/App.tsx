@@ -18,6 +18,9 @@ import Storage from "./pages/Storage";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import SearchResults from "./pages/SearchResults";
+import Privacy from "./pages/Privacy";
+import TermsConditions from "./pages/TermsConditions";
 
 const queryClient = new QueryClient();
 
@@ -69,8 +72,12 @@ const App = () => (
           <Route path="/contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
           <Route path="/weburls" element={<ProtectedRoute><WebUrls /></ProtectedRoute>} />
           <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
+          <Route path="/categories/:categoryId" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
           <Route path="/storage" element={<ProtectedRoute><Storage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<TermsConditions />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
