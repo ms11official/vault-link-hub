@@ -18,7 +18,7 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [password, setPassword] = useState("");
+  const [emailPassword, setEmailPassword] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -63,7 +63,7 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
       }
 
       const metadata: any = {};
-      if (password) metadata.password = password;
+      if (emailPassword && type === "email") metadata.emailPassword = emailPassword;
       if (fileUrl) metadata.fileUrl = fileUrl;
       if (file) metadata.fileName = file.name;
 
@@ -84,7 +84,7 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
 
       setTitle("");
       setContent("");
-      setPassword("");
+      setEmailPassword("");
       setFile(null);
       setOpen(false);
       onSuccess();
@@ -180,15 +180,17 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password Protection (Optional)</Label>
-            <PasswordInput
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password to protect this item"
-            />
-          </div>
+          {type === "email" && (
+            <div className="space-y-2">
+              <Label htmlFor="emailPassword">Email Password (Optional)</Label>
+              <PasswordInput
+                id="emailPassword"
+                value={emailPassword}
+                onChange={(e) => setEmailPassword(e.target.value)}
+                placeholder="Enter email password"
+              />
+            </div>
+          )}
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Adding..." : "Add Item"}

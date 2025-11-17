@@ -12,6 +12,8 @@ interface Item {
   title: string;
   content: string;
   created_at: string;
+  type: string;
+  metadata?: any;
 }
 
 const Contacts = () => {
@@ -85,7 +87,10 @@ const Contacts = () => {
                 title={item.title}
                 content={item.content}
                 createdAt={item.created_at}
+                type={item.type}
+                metadata={item.metadata}
                 onDelete={fetchItems}
+                onUpdate={fetchItems}
               />
             ))}
           </div>
