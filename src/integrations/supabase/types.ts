@@ -20,6 +20,7 @@ export type Database = {
           icon: string | null
           id: string
           name: string
+          password: string | null
           updated_at: string
           user_id: string
         }
@@ -28,6 +29,7 @@ export type Database = {
           icon?: string | null
           id?: string
           name: string
+          password?: string | null
           updated_at?: string
           user_id: string
         }
@@ -36,8 +38,45 @@ export type Database = {
           icon?: string | null
           id?: string
           name?: string
+          password?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      category_otp_verifications: {
+        Row: {
+          category_id: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          is_default_category: boolean
+          otp: string
+          user_id: string
+          verified: boolean | null
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          is_default_category: boolean
+          otp: string
+          user_id: string
+          verified?: boolean | null
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          is_default_category?: boolean
+          otp?: string
+          user_id?: string
+          verified?: boolean | null
         }
         Relationships: []
       }
@@ -180,6 +219,33 @@ export type Database = {
           limit_bytes?: number
           updated_at?: string
           used_bytes?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_category_settings: {
+        Row: {
+          category_type: string
+          created_at: string
+          id: string
+          password: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_type: string
+          created_at?: string
+          id?: string
+          password?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_type?: string
+          created_at?: string
+          id?: string
+          password?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
