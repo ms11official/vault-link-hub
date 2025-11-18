@@ -117,6 +117,7 @@ export type Database = {
       }
       items: {
         Row: {
+          category_id: string | null
           content: string
           created_at: string
           id: string
@@ -127,6 +128,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category_id?: string | null
           content: string
           created_at?: string
           id?: string
@@ -137,6 +139,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category_id?: string | null
           content?: string
           created_at?: string
           id?: string
@@ -146,7 +149,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       otp_verifications: {
         Row: {
