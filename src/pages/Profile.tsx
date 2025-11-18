@@ -5,7 +5,7 @@ import BottomNav from "@/components/BottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Calendar, Shield, LogOut } from "lucide-react";
+import { Mail, Calendar, Shield, LogOut, FileText, Lock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 
@@ -176,6 +176,32 @@ const Profile = () => {
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
+
+            <div className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Legal</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button
+                    onClick={() => navigate("/privacy")}
+                    variant="outline"
+                    className="w-full justify-start"
+                  >
+                    <Lock className="h-4 w-4 mr-2" />
+                    Privacy Policy
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/terms")}
+                    variant="outline"
+                    className="w-full justify-start"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Terms & Conditions
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </>
         ) : (
           <Card>
