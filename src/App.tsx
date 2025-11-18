@@ -14,6 +14,7 @@ import Passwords from "./pages/Passwords";
 import Contacts from "./pages/Contacts";
 import WebUrls from "./pages/WebUrls";
 import Categories from "./pages/Categories";
+import CategoryDetails from "./pages/CategoryDetails";
 import Storage from "./pages/Storage";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
@@ -72,7 +73,7 @@ const App = () => (
           <Route path="/contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
           <Route path="/weburls" element={<ProtectedRoute><WebUrls /></ProtectedRoute>} />
           <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
-          <Route path="/categories/:categoryId" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
+          <Route path="/categories/:categoryId" element={<ProtectedRoute><CategoryDetails /></ProtectedRoute>} />
           <Route path="/storage" element={<ProtectedRoute><Storage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />

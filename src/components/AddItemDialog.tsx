@@ -12,9 +12,10 @@ import { useToast } from "@/hooks/use-toast";
 interface AddItemDialogProps {
   type: "link" | "email" | "message" | "password" | "contact" | "weburl";
   onSuccess: () => void;
+  categoryId?: string;
 }
 
-const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
+const AddItemDialog = ({ type, onSuccess, categoryId }: AddItemDialogProps) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -73,6 +74,7 @@ const AddItemDialog = ({ type, onSuccess }: AddItemDialogProps) => {
         title,
         content: fileUrl || content,
         metadata,
+        category_id: categoryId || null,
       });
 
       if (error) throw error;
