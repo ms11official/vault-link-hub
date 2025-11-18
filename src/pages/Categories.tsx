@@ -333,7 +333,7 @@ const Categories = () => {
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {customCategories.map((category) => (
                   <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer relative">
-                    <div onClick={() => handleCategoryClick(category, `/category/${category.id}`, false)}>
+                    <div onClick={() => handleCategoryClick(category, `/categories/${category.id}`, false)}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-lg font-medium">{category.name}</CardTitle>
                         <Globe className="h-5 w-5 text-primary" />
