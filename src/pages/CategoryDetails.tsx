@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import BottomNav from "@/components/BottomNav";
 import AddItemDialog from "@/components/AddItemDialog";
 import ItemCard from "@/components/ItemCard";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 interface Item {
   id: string;
@@ -25,6 +26,7 @@ interface Category {
 
 const CategoryDetails = () => {
   const { categoryId } = useParams();
+  const navigate = useNavigate();
   const [items, setItems] = useState<Item[]>([]);
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +80,7 @@ const CategoryDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-6">
           <Skeleton className="h-10 w-48 mb-6" />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -95,25 +97,31 @@ const CategoryDetails = () => {
             ))}
           </div>
         </div>
-        <BottomNav />
       </div>
     );
   }
 
   if (!category) {
     return (
-      <div className="min-h-screen bg-background pb-20 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-muted-foreground">Category not found</p>
-        <BottomNav />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">{category.name}</h1>
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/categories")}
+            className="shrink-0"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-3xl font-bold flex-1">{category.name}</h1>
           <AddItemDialog type="link" categoryId={categoryId} onSuccess={fetchData} />
         </div>
 
@@ -137,7 +145,6 @@ const CategoryDetails = () => {
           </div>
         )}
       </div>
-      <BottomNav />
     </div>
   );
 };
