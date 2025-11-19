@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import BottomNav from "@/components/BottomNav";
-import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link2, Mail, MessageSquare, Lock, User, Globe } from "lucide-react";
+import { Link2, Mail, MessageSquare, Lock, User, Globe, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const query = searchParams.get("q") || "";
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,17 +57,25 @@ const SearchResults = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <Navbar />
-      
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2 text-foreground">
-            Search Results for "{query}"
-          </h1>
-          <p className="text-muted-foreground">
-            Found {results.length} {results.length === 1 ? "item" : "items"}
-          </p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            className="shrink-0"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold mb-2 text-foreground">
+              Search Results for "{query}"
+            </h1>
+            <p className="text-muted-foreground">
+              Found {results.length} {results.length === 1 ? "item" : "items"}
+            </p>
+          </div>
         </div>
 
         {loading ? (
@@ -120,7 +128,6 @@ const SearchResults = () => {
           </div>
         )}
       </div>
-      <BottomNav />
     </div>
   );
 };

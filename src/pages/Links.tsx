@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import BottomNav from "@/components/BottomNav";
 import AddItemDialog from "@/components/AddItemDialog";
 import ItemCard from "@/components/ItemCard";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 interface Item {
   id: string;
@@ -20,6 +22,7 @@ const Links = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const fetchItems = async () => {
     try {
@@ -55,10 +58,18 @@ const Links = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Links</h1>
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            className="shrink-0"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-3xl font-bold flex-1">Links</h1>
           <AddItemDialog type="link" onSuccess={fetchItems} />
         </div>
 
@@ -96,7 +107,6 @@ const Links = () => {
           </div>
         )}
       </div>
-      <BottomNav />
     </div>
   );
 };
