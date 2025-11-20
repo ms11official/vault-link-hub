@@ -3,7 +3,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,6 +17,7 @@ interface ItemDetailsDialogProps {
     content: string;
     type: string;
     metadata?: any;
+    category_id?: string | null;
   };
   onUpdate: () => void;
 }
@@ -23,8 +25,34 @@ interface ItemDetailsDialogProps {
 const ItemDetailsDialog = ({ open, onOpenChange, item, onUpdate }: ItemDetailsDialogProps) => {
   const [title, setTitle] = useState(item.title);
   const [content, setContent] = useState(item.content);
+  const [categoryId, setCategoryId] = useState<string | null>(item.category_id || null);
+  const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data, error } = await supabase
+          .from("categories")
+          .select("id, name")
+          .eq("user_id", user.id)
+          .order("name");
+
+        if (error) throw error;
+        setCategories(data || []);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    if (open) {
+      fetchCategories();
+    }
+  }, [open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +61,12 @@ const ItemDetailsDialog = ({ open, onOpenChange, item, onUpdate }: ItemDetailsDi
     try {
       const { error } = await supabase
         .from("items")
-        .update({ title, content, updated_at: new Date().toISOString() })
+        .update({ 
+          title, 
+          content, 
+          category_id: categoryId,
+          updated_at: new Date().toISOString() 
+        })
         .eq("id", item.id);
 
       if (error) throw error;
@@ -84,6 +117,26 @@ const ItemDetailsDialog = ({ open, onOpenChange, item, onUpdate }: ItemDetailsDi
               required
               rows={6}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-category">Category (Optional)</Label>
+            <Select
+              value={categoryId || "none"}
+              onValueChange={(value) => setCategoryId(value === "none" ? null : value)}
+            >
+              <SelectTrigger id="edit-category">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No Category</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {item.metadata?.emailPassword && (
