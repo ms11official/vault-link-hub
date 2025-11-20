@@ -14,11 +14,12 @@ interface ItemCardProps {
   createdAt: string;
   type: string;
   metadata?: any;
+  category_id?: string | null;
   onDelete: () => void;
   onUpdate: () => void;
 }
 
-const ItemCard = ({ id, title, content, createdAt, type, metadata, onDelete, onUpdate }: ItemCardProps) => {
+const ItemCard = ({ id, title, content, createdAt, type, metadata, category_id, onDelete, onUpdate }: ItemCardProps) => {
   const { toast } = useToast();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -79,7 +80,7 @@ const ItemCard = ({ id, title, content, createdAt, type, metadata, onDelete, onU
       <ItemDetailsDialog
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
-        item={{ id, title, content, type, metadata }}
+        item={{ id, title, content, type, metadata, category_id }}
         onUpdate={onUpdate}
       />
     </>

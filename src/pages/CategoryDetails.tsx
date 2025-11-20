@@ -2,12 +2,27 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AddItemDialog from "@/components/AddItemDialog";
-import ItemCard from "@/components/ItemCard";
+import DraggableItemCard from "@/components/DraggableItemCard";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 interface Item {
   id: string;
@@ -16,6 +31,7 @@ interface Item {
   created_at: string;
   type: string;
   metadata?: any;
+  category_id?: string | null;
 }
 
 interface Category {
@@ -57,6 +73,7 @@ const CategoryDetails = () => {
         .from("items")
         .select("*")
         .eq("category_id", categoryId)
+        .order("order", { ascending: true })
         .order("created_at", { ascending: false });
 
       if (itemsError) throw itemsError;
@@ -77,6 +94,54 @@ const CategoryDetails = () => {
       fetchData();
     }
   }, [categoryId]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = items.findIndex((item) => item.id === active.id);
+    const newIndex = items.findIndex((item) => item.id === over.id);
+
+    const newItems = arrayMove(items, oldIndex, newIndex);
+    setItems(newItems);
+
+    // Update order in database
+    try {
+      const updates = newItems.map((item, index) => ({
+        id: item.id,
+        order: index,
+      }));
+
+      for (const update of updates) {
+        await supabase
+          .from("items")
+          .update({ order: update.order })
+          .eq("id", update.id);
+      }
+
+      toast({
+        title: "Success",
+        description: "Items reordered successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to reorder items",
+        variant: "destructive",
+      });
+      fetchData(); // Refresh on error
+    }
+  };
 
   if (loading) {
     return (
@@ -128,21 +193,33 @@ const CategoryDetails = () => {
         {items.length === 0 ? (
           <p className="text-center text-muted-foreground">No items yet. Add your first item!</p>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {items.map((item) => (
-              <ItemCard
-                key={item.id}
-                id={item.id}
-                title={item.title}
-                content={item.content}
-                createdAt={item.created_at}
-                type={item.type}
-                metadata={item.metadata}
-                onDelete={fetchData}
-                onUpdate={fetchData}
-              />
-            ))}
-          </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={items.map((item) => item.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {items.map((item) => (
+                  <DraggableItemCard
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    content={item.content}
+                    createdAt={item.created_at}
+                    type={item.type}
+                    metadata={item.metadata}
+                    category_id={item.category_id}
+                    onDelete={fetchData}
+                    onUpdate={fetchData}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
     </div>
