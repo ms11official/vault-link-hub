@@ -14,6 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { CategoryPasswordDialog } from "@/components/CategoryPasswordDialog";
 import { ForgotCategoryPasswordDialog } from "@/components/ForgotCategoryPasswordDialog";
 import { VerifyPasswordDialog } from "@/components/VerifyPasswordDialog";
+import CategoryTemplatesDialog from "@/components/CategoryTemplatesDialog";
 
 const Categories = () => {
   const [stats, setStats] = useState({
@@ -202,14 +203,16 @@ const Categories = () => {
             <h1 className="text-3xl font-bold">Categories</h1>
             <p className="text-muted-foreground">Manage your storage categories</p>
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Create Category
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+          <div className="flex gap-2">
+            <CategoryTemplatesDialog onSuccess={fetchData} />
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Category
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
               <DialogHeader>
                 <DialogTitle>Create New Category</DialogTitle>
               </DialogHeader>
@@ -238,6 +241,7 @@ const Categories = () => {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         <div className="space-y-6">
