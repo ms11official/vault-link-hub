@@ -7,8 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, MoreVertical, Trash2, FolderOpen } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ArrowLeft, Plus, MoreVertical, Trash2, FolderOpen, FileText } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -53,6 +53,7 @@ const CategoryDetails = () => {
   const [category, setCategory] = useState<Category | null>(null);
   const [subCategories, setSubCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [addItemOpen, setAddItemOpen] = useState(false);
   const [createSubCategoryOpen, setCreateSubCategoryOpen] = useState(false);
   const [newSubCategory, setNewSubCategory] = useState({ name: "", icon: "" });
   const { toast } = useToast();
@@ -269,51 +270,82 @@ const CategoryDetails = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-3xl font-bold flex-1">{category.name}</h1>
-          <AddItemDialog type="link" categoryId={categoryId} onSuccess={fetchData} />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="icon" className="rounded-full">
+                <Plus className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-popover z-50">
+              <DropdownMenuItem onClick={() => setAddItemOpen(true)}>
+                <FileText className="mr-2 h-4 w-4" />
+                Add Item
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setCreateSubCategoryOpen(true)}>
+                <FolderOpen className="mr-2 h-4 w-4" />
+                Add Sub-category
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
+
+        {/* Add Item Dialog */}
+        {addItemOpen && (
+          <Dialog open={addItemOpen} onOpenChange={setAddItemOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Item to {category.name}</DialogTitle>
+              </DialogHeader>
+              <div className="mt-4">
+                <AddItemDialog 
+                  type="link" 
+                  categoryId={categoryId} 
+                  onSuccess={() => {
+                    setAddItemOpen(false);
+                    fetchData();
+                  }} 
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {/* Create Sub-category Dialog */}
+        <Dialog open={createSubCategoryOpen} onOpenChange={setCreateSubCategoryOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create Sub-category</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="subname">Sub-category Name</Label>
+                <Input
+                  id="subname"
+                  value={newSubCategory.name}
+                  onChange={(e) => setNewSubCategory({ ...newSubCategory, name: e.target.value })}
+                  placeholder="Enter sub-category name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="subicon">Icon Name (optional)</Label>
+                <Input
+                  id="subicon"
+                  value={newSubCategory.icon}
+                  onChange={(e) => setNewSubCategory({ ...newSubCategory, icon: e.target.value })}
+                  placeholder="e.g., FolderOpen"
+                />
+              </div>
+              <Button onClick={createSubCategory} className="w-full">
+                Create
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Sub-categories Section */}
         {subCategories.length > 0 && (
           <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Sub-categories</h2>
-              <Dialog open={createSubCategoryOpen} onOpenChange={setCreateSubCategoryOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Sub-category
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create Sub-category</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="subname">Sub-category Name</Label>
-                      <Input
-                        id="subname"
-                        value={newSubCategory.name}
-                        onChange={(e) => setNewSubCategory({ ...newSubCategory, name: e.target.value })}
-                        placeholder="Enter sub-category name"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="subicon">Icon Name (optional)</Label>
-                      <Input
-                        id="subicon"
-                        value={newSubCategory.icon}
-                        onChange={(e) => setNewSubCategory({ ...newSubCategory, icon: e.target.value })}
-                        placeholder="e.g., FolderOpen"
-                      />
-                    </div>
-                    <Button onClick={createSubCategory} className="w-full">
-                      Create
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
+            <h2 className="text-xl font-semibold mb-4">Sub-categories</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
               {subCategories.map((subCategory) => (
                 <Card key={subCategory.id} className="hover:shadow-lg transition-shadow cursor-pointer relative">
@@ -352,47 +384,6 @@ const CategoryDetails = () => {
                 </Card>
               ))}
             </div>
-          </div>
-        )}
-
-        {!subCategories.length && (
-          <div className="mb-6">
-            <Dialog open={createSubCategoryOpen} onOpenChange={setCreateSubCategoryOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Sub-category
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create Sub-category</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="subname">Sub-category Name</Label>
-                    <Input
-                      id="subname"
-                      value={newSubCategory.name}
-                      onChange={(e) => setNewSubCategory({ ...newSubCategory, name: e.target.value })}
-                      placeholder="Enter sub-category name"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="subicon">Icon Name (optional)</Label>
-                    <Input
-                      id="subicon"
-                      value={newSubCategory.icon}
-                      onChange={(e) => setNewSubCategory({ ...newSubCategory, icon: e.target.value })}
-                      placeholder="e.g., FolderOpen"
-                    />
-                  </div>
-                  <Button onClick={createSubCategory} className="w-full">
-                    Create
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
           </div>
         )}
 
