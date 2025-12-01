@@ -53,6 +53,7 @@ const WebUrls = () => {
         .from("items")
         .select("*")
         .eq("type", "weburl")
+        .is("category_id", null)
         .order("order", { ascending: true })
         .order("created_at", { ascending: false });
 

@@ -53,6 +53,7 @@ const Emails = () => {
         .from("items")
         .select("*")
         .eq("type", "email")
+        .is("category_id", null)
         .order("order", { ascending: true })
         .order("created_at", { ascending: false });
 
