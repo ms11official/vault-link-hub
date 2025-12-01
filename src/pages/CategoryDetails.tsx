@@ -7,7 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, MoreVertical, Trash2, FolderOpen } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   DndContext,
   closestCenter,
@@ -38,6 +42,8 @@ interface Category {
   id: string;
   name: string;
   icon: string | null;
+  password: string | null;
+  parent_category_id: string | null;
 }
 
 const CategoryDetails = () => {
@@ -45,7 +51,10 @@ const CategoryDetails = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState<Item[]>([]);
   const [category, setCategory] = useState<Category | null>(null);
+  const [subCategories, setSubCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [createSubCategoryOpen, setCreateSubCategoryOpen] = useState(false);
+  const [newSubCategory, setNewSubCategory] = useState({ name: "", icon: "" });
   const { toast } = useToast();
 
   const fetchData = async () => {
@@ -78,6 +87,16 @@ const CategoryDetails = () => {
 
       if (itemsError) throw itemsError;
       setItems(itemsData || []);
+
+      // Fetch sub-categories
+      const { data: subCategoriesData, error: subCategoriesError } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("parent_category_id", categoryId)
+        .order("created_at", { ascending: false });
+
+      if (subCategoriesError) throw subCategoriesError;
+      setSubCategories(subCategoriesData || []);
     } catch (error) {
       toast({
         title: "Error",
@@ -143,6 +162,69 @@ const CategoryDetails = () => {
     }
   };
 
+  const createSubCategory = async () => {
+    if (!newSubCategory.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a sub-category name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase.from("categories").insert({
+        user_id: user.id,
+        name: newSubCategory.name,
+        icon: newSubCategory.icon || "FolderOpen",
+        parent_category_id: categoryId,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Sub-category created successfully",
+      });
+
+      setNewSubCategory({ name: "", icon: "" });
+      setCreateSubCategoryOpen(false);
+      fetchData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create sub-category",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteSubCategory = async (subCategoryId: string) => {
+    try {
+      const { error } = await supabase
+        .from("categories")
+        .delete()
+        .eq("id", subCategoryId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Sub-category deleted successfully",
+      });
+      fetchData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete sub-category",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -189,6 +271,130 @@ const CategoryDetails = () => {
           <h1 className="text-3xl font-bold flex-1">{category.name}</h1>
           <AddItemDialog type="link" categoryId={categoryId} onSuccess={fetchData} />
         </div>
+
+        {/* Sub-categories Section */}
+        {subCategories.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Sub-categories</h2>
+              <Dialog open={createSubCategoryOpen} onOpenChange={setCreateSubCategoryOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Sub-category
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create Sub-category</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="subname">Sub-category Name</Label>
+                      <Input
+                        id="subname"
+                        value={newSubCategory.name}
+                        onChange={(e) => setNewSubCategory({ ...newSubCategory, name: e.target.value })}
+                        placeholder="Enter sub-category name"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="subicon">Icon Name (optional)</Label>
+                      <Input
+                        id="subicon"
+                        value={newSubCategory.icon}
+                        onChange={(e) => setNewSubCategory({ ...newSubCategory, icon: e.target.value })}
+                        placeholder="e.g., FolderOpen"
+                      />
+                    </div>
+                    <Button onClick={createSubCategory} className="w-full">
+                      Create
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+              {subCategories.map((subCategory) => (
+                <Card key={subCategory.id} className="hover:shadow-lg transition-shadow cursor-pointer relative">
+                  <div onClick={() => navigate(`/categories/${subCategory.id}`)}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <h3 className="text-lg font-medium">{subCategory.name}</h3>
+                      <FolderOpen className="h-5 w-5 text-primary" />
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-xs text-muted-foreground">Sub-category</p>
+                    </CardContent>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute bottom-2 right-2 h-8 w-8"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-popover z-50">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteSubCategory(subCategory.id);
+                        }}
+                        className="text-destructive"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!subCategories.length && (
+          <div className="mb-6">
+            <Dialog open={createSubCategoryOpen} onOpenChange={setCreateSubCategoryOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Sub-category
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create Sub-category</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="subname">Sub-category Name</Label>
+                    <Input
+                      id="subname"
+                      value={newSubCategory.name}
+                      onChange={(e) => setNewSubCategory({ ...newSubCategory, name: e.target.value })}
+                      placeholder="Enter sub-category name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="subicon">Icon Name (optional)</Label>
+                    <Input
+                      id="subicon"
+                      value={newSubCategory.icon}
+                      onChange={(e) => setNewSubCategory({ ...newSubCategory, icon: e.target.value })}
+                      placeholder="e.g., FolderOpen"
+                    />
+                  </div>
+                  <Button onClick={createSubCategory} className="w-full">
+                    Create
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )}
 
         {items.length === 0 ? (
           <p className="text-center text-muted-foreground">No items yet. Add your first item!</p>

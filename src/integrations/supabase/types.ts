@@ -20,6 +20,7 @@ export type Database = {
           icon: string | null
           id: string
           name: string
+          parent_category_id: string | null
           password: string | null
           updated_at: string
           user_id: string
@@ -29,6 +30,7 @@ export type Database = {
           icon?: string | null
           id?: string
           name: string
+          parent_category_id?: string | null
           password?: string | null
           updated_at?: string
           user_id: string
@@ -38,11 +40,20 @@ export type Database = {
           icon?: string | null
           id?: string
           name?: string
+          parent_category_id?: string | null
           password?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_category_id_fkey"
+            columns: ["parent_category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       category_otp_verifications: {
         Row: {

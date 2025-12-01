@@ -53,6 +53,7 @@ const Links = () => {
         .from("items")
         .select("*")
         .eq("type", "link")
+        .is("category_id", null)
         .order("order", { ascending: true })
         .order("created_at", { ascending: false });
 

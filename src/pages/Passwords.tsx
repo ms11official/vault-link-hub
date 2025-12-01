@@ -53,6 +53,7 @@ const Passwords = () => {
         .from("items")
         .select("*")
         .eq("type", "password")
+        .is("category_id", null)
         .order("order", { ascending: true })
         .order("created_at", { ascending: false });
 
