@@ -15,7 +15,7 @@ import Contacts from "./pages/Contacts";
 import WebUrls from "./pages/WebUrls";
 import Categories from "./pages/Categories";
 import CategoryDetails from "./pages/CategoryDetails";
-import Storage from "./pages/Storage";
+import Tools from "./pages/Tools";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -74,7 +74,7 @@ const App = () => (
           <Route path="/weburls" element={<ProtectedRoute><WebUrls /></ProtectedRoute>} />
           <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
           <Route path="/categories/:categoryId" element={<ProtectedRoute><CategoryDetails /></ProtectedRoute>} />
-          <Route path="/storage" element={<ProtectedRoute><Storage /></ProtectedRoute>} />
+          <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
           <Route path="/privacy" element={<Privacy />} />
