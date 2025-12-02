@@ -9,9 +9,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, MoreVertical, Trash2, FolderOpen, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { IconPicker, getIconComponent } from "@/components/IconPicker";
 import {
   DndContext,
   closestCenter,
@@ -319,20 +319,19 @@ const CategoryDetails = () => {
             <div className="space-y-4">
               <div>
                 <Label htmlFor="subname">Sub-category Name</Label>
-                <Input
+                <input
                   id="subname"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={newSubCategory.name}
                   onChange={(e) => setNewSubCategory({ ...newSubCategory, name: e.target.value })}
                   placeholder="Enter sub-category name"
                 />
               </div>
               <div>
-                <Label htmlFor="subicon">Icon Name (optional)</Label>
-                <Input
-                  id="subicon"
-                  value={newSubCategory.icon}
-                  onChange={(e) => setNewSubCategory({ ...newSubCategory, icon: e.target.value })}
-                  placeholder="e.g., FolderOpen"
+                <Label>Icon</Label>
+                <IconPicker
+                  value={newSubCategory.icon || "FolderOpen"}
+                  onChange={(icon) => setNewSubCategory({ ...newSubCategory, icon })}
                 />
               </div>
               <Button onClick={createSubCategory} className="w-full">
@@ -352,7 +351,10 @@ const CategoryDetails = () => {
                   <div onClick={() => navigate(`/categories/${subCategory.id}`)}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <h3 className="text-lg font-medium">{subCategory.name}</h3>
-                      <FolderOpen className="h-5 w-5 text-primary" />
+                      {(() => {
+                        const SubCategoryIcon = getIconComponent(subCategory.icon || "FolderOpen");
+                        return <SubCategoryIcon className="h-5 w-5 text-primary" />;
+                      })()}
                     </CardHeader>
                     <CardContent>
                       <p className="text-xs text-muted-foreground">Sub-category</p>
