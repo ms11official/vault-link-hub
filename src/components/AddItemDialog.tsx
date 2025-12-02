@@ -9,13 +9,16 @@ import { Plus, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+type ItemType = "link" | "email" | "message" | "password" | "contact" | "weburl";
+
 interface AddItemDialogProps {
-  type: "link" | "email" | "message" | "password" | "contact" | "weburl";
+  type: ItemType;
   onSuccess: () => void;
   categoryId?: string;
+  triggerButton?: React.ReactNode;
 }
 
-const AddItemDialog = ({ type, onSuccess, categoryId }: AddItemDialogProps) => {
+const AddItemDialog = ({ type, onSuccess, categoryId, triggerButton }: AddItemDialogProps) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -121,9 +124,11 @@ const AddItemDialog = ({ type, onSuccess, categoryId }: AddItemDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="icon" className="rounded-full">
-          <Plus className="h-5 w-5" />
-        </Button>
+        {triggerButton || (
+          <Button size="icon" className="rounded-full">
+            <Plus className="h-5 w-5" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -204,3 +209,4 @@ const AddItemDialog = ({ type, onSuccess, categoryId }: AddItemDialogProps) => {
 };
 
 export default AddItemDialog;
+export type { ItemType };

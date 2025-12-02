@@ -16,6 +16,7 @@ import WebUrls from "./pages/WebUrls";
 import Categories from "./pages/Categories";
 import CategoryDetails from "./pages/CategoryDetails";
 import Tools from "./pages/Tools";
+import ToolDetails from "./pages/ToolDetails";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -75,6 +76,7 @@ const App = () => (
           <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
           <Route path="/categories/:categoryId" element={<ProtectedRoute><CategoryDetails /></ProtectedRoute>} />
           <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
+          <Route path="/tools/:toolId" element={<ProtectedRoute><ToolDetails /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
           <Route path="/privacy" element={<Privacy />} />
