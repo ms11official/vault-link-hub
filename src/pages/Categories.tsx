@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import BottomNav from "@/components/BottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link2, Mail, MessageSquare, Lock, User, Globe, Plus, MoreVertical, Trash2, KeyRound } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import { CategoryPasswordDialog } from "@/components/CategoryPasswordDialog";
 import { ForgotCategoryPasswordDialog } from "@/components/ForgotCategoryPasswordDialog";
 import { VerifyPasswordDialog } from "@/components/VerifyPasswordDialog";
 import CategoryTemplatesDialog from "@/components/CategoryTemplatesDialog";
+import { IconPicker, getIconComponent } from "@/components/IconPicker";
 
 const Categories = () => {
   const [stats, setStats] = useState({
@@ -226,13 +227,11 @@ const Categories = () => {
                     placeholder="Enter category name"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="icon">Icon Name (optional)</Label>
-                  <Input
-                    id="icon"
-                    value={newCategory.icon}
-                    onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
-                    placeholder="e.g., FolderOpen"
+              <div>
+                  <Label>Icon</Label>
+                  <IconPicker
+                    value={newCategory.icon || "FolderOpen"}
+                    onChange={(icon) => setNewCategory({ ...newCategory, icon })}
                   />
                 </div>
                 <Button onClick={createCategory} className="w-full">
@@ -340,7 +339,10 @@ const Categories = () => {
                     <div onClick={() => handleCategoryClick(category, `/categories/${category.id}`, false)}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-lg font-medium">{category.name}</CardTitle>
-                        <Globe className="h-5 w-5 text-primary" />
+                        {(() => {
+                          const CategoryIcon = getIconComponent(category.icon || "FolderOpen");
+                          return <CategoryIcon className="h-5 w-5 text-primary" />;
+                        })()}
                       </CardHeader>
                       <CardContent>
                         <div className="text-3xl font-bold">0</div>
