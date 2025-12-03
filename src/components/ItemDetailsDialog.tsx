@@ -30,6 +30,15 @@ const ItemDetailsDialog = ({ open, onOpenChange, item, onUpdate }: ItemDetailsDi
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
+  // Sync state when dialog opens or item changes
+  useEffect(() => {
+    if (open) {
+      setTitle(item.title);
+      setContent(item.content);
+      setCategoryId(item.category_id || null);
+    }
+  }, [open, item]);
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
