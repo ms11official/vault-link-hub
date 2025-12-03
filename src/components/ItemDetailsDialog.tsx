@@ -100,7 +100,11 @@ const ItemDetailsDialog = ({ open, onOpenChange, item, onUpdate }: ItemDetailsDi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent 
+        className="max-w-2xl"
+        onPointerDown={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
         <DialogHeader>
           <DialogTitle>Edit {item.type.charAt(0).toUpperCase() + item.type.slice(1)}</DialogTitle>
         </DialogHeader>
