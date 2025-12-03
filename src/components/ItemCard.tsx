@@ -56,7 +56,7 @@ const ItemCard = ({ id, title, content, createdAt, type, metadata, category_id, 
       <Card>
         <CardHeader className="flex flex-row items-start justify-between space-y-0">
           <CardTitle className="text-lg">{title}</CardTitle>
-          <div className="flex gap-2">
+          <div className="flex gap-2" onPointerDown={(e) => e.stopPropagation()}>
             <Button variant="ghost" size="icon" onClick={() => setEditDialogOpen(true)}>
               <Edit className="h-4 w-4" />
             </Button>
