@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import BottomNav from "@/components/BottomNav";
+import MainLayout from "@/components/MainLayout";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link2, Mail, MessageSquare, Lock, User, Globe, Clock, TrendingUp } from "lucide-react";
@@ -109,7 +109,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <MainLayout>
       <Navbar onSearch={handleSearch} />
       
       <div className="container mx-auto px-4 py-6 space-y-8">
@@ -253,8 +253,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-      <BottomNav />
-    </div>
+    </MainLayout>
   );
 };
 

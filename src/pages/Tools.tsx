@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import BottomNav from "@/components/BottomNav";
+import MainLayout from "@/components/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,7 +29,7 @@ const Tools = () => {
   const categories = [...new Set(tools.map(tool => tool.category))];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <MainLayout>
       <div className="container mx-auto px-4 py-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">Tools</h1>
@@ -143,9 +143,7 @@ const Tools = () => {
           ))}
         </Tabs>
       </div>
-
-      <BottomNav />
-    </div>
+    </MainLayout>
   );
 };
 
