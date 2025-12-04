@@ -849,22 +849,36 @@ const CategoryTemplatesDialog = ({ onSuccess }: CategoryTemplatesDialogProps) =>
         return;
       }
 
-      // Create each category and its sub-categories
+      // Create main folder with template name
+      const { data: mainFolder, error: mainFolderError } = await supabase
+        .from("categories")
+        .insert({
+          user_id: user.id,
+          name: template.name,
+          icon: "FolderOpen",
+        })
+        .select()
+        .single();
+
+      if (mainFolderError) throw mainFolderError;
+
+      // Create each category as sub-folder inside main folder
       for (const category of template.categories) {
-        const { data: parentCategory, error: categoryError } = await supabase
+        const { data: categoryFolder, error: categoryError } = await supabase
           .from("categories")
           .insert({
             user_id: user.id,
             name: category.name,
             icon: category.icon,
+            parent_category_id: mainFolder.id,
           })
           .select()
           .single();
 
         if (categoryError) throw categoryError;
 
-        // Create sub-categories if they exist
-        if (category.subCategories && parentCategory) {
+        // Create sub-categories inside category folder
+        if (category.subCategories && categoryFolder) {
           for (const subCategoryName of category.subCategories) {
             const { error: subCategoryError } = await supabase
               .from("categories")
@@ -872,7 +886,7 @@ const CategoryTemplatesDialog = ({ onSuccess }: CategoryTemplatesDialogProps) =>
                 user_id: user.id,
                 name: subCategoryName,
                 icon: "FolderOpen",
-                parent_category_id: parentCategory.id,
+                parent_category_id: categoryFolder.id,
               });
 
             if (subCategoryError) throw subCategoryError;
@@ -882,7 +896,7 @@ const CategoryTemplatesDialog = ({ onSuccess }: CategoryTemplatesDialogProps) =>
 
       toast({
         title: "Success",
-        description: `${template.name} template created with ${template.categories.length} folders and all sub-folders`,
+        description: `${template.name} folder created with ${template.categories.length} sub-folders and all nested items`,
       });
 
       setOpen(false);
