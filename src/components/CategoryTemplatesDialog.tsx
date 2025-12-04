@@ -912,7 +912,7 @@ const CategoryTemplatesDialog = ({ onSuccess }: CategoryTemplatesDialogProps) =>
           Use Template
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-5xl max-h-[90vh]">
+      <DialogContent className="w-screen h-screen max-w-none max-h-none m-0 rounded-none flex flex-col">
         <DialogHeader>
           <DialogTitle>Category Templates ({templates.length}+ Templates)</DialogTitle>
           <DialogDescription>
@@ -920,7 +920,7 @@ const CategoryTemplatesDialog = ({ onSuccess }: CategoryTemplatesDialogProps) =>
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="flex-1 flex flex-col space-y-4 overflow-hidden">
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -933,7 +933,7 @@ const CategoryTemplatesDialog = ({ onSuccess }: CategoryTemplatesDialogProps) =>
           </div>
 
           {/* Category Filters */}
-          <ScrollArea className="w-full whitespace-nowrap">
+          <ScrollArea className="w-full whitespace-nowrap flex-shrink-0">
             <div className="flex gap-2 pb-2">
               {categoryFilters.map((filter) => (
                 <Badge
@@ -949,8 +949,8 @@ const CategoryTemplatesDialog = ({ onSuccess }: CategoryTemplatesDialogProps) =>
           </ScrollArea>
 
           {/* Templates Grid */}
-          <ScrollArea className="h-[400px] pr-4">
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          <ScrollArea className="flex-1 pr-4">
+            <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {filteredTemplates.map((template) => {
                 const Icon = template.icon;
                 const isSelected = selectedTemplate === template.id;
