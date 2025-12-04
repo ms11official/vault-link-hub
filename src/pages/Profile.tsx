@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import BottomNav from "@/components/BottomNav";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import MainLayout from "@/components/MainLayout";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Calendar, Shield, LogOut, FileText, Lock } from "lucide-react";
+import { Mail, Calendar, Shield, LogOut, FileText, Lock, CheckCircle, Clock, Settings } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -52,157 +53,175 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="container mx-auto px-4 py-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Profile</h1>
-          <p className="text-muted-foreground">Your account information</p>
-        </div>
-
+    <MainLayout>
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
         {loading ? (
           <div className="space-y-6">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center space-y-4">
-                  <Skeleton className="h-24 w-24 rounded-full" />
-                  <Skeleton className="h-6 w-48" />
-                  <Skeleton className="h-4 w-32" />
-                </div>
-              </CardContent>
-            </Card>
-            <div className="grid gap-4 md:grid-cols-2">
-              {[...Array(3)].map((_, i) => (
-                <Card key={i}>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-32" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-4 w-full" />
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="flex items-center gap-6">
+              <Skeleton className="h-28 w-28 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-4 w-32" />
+              </div>
             </div>
+            <Skeleton className="h-48 w-full rounded-xl" />
           </div>
         ) : user ? (
-          <>
-            <Card className="mb-8">
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center space-y-4">
-                  <Avatar className="h-24 w-24">
-                    <AvatarFallback className="text-2xl">
-                      {getInitials(user.email || "")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="text-center">
-                    <h2 className="text-2xl font-bold">{user.email}</h2>
-                    <p className="text-sm text-muted-foreground">User ID: {user.id}</p>
-                  </div>
+          <div className="space-y-8">
+            {/* Profile Header */}
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+              <div className="relative">
+                <Avatar className="h-28 w-28 ring-4 ring-primary/10">
+                  <AvatarFallback className="text-3xl font-bold bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
+                    {getInitials(user.email || "")}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-1 -right-1 bg-green-500 h-6 w-6 rounded-full border-4 border-background flex items-center justify-center">
+                  <CheckCircle className="h-3 w-3 text-white" />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+              <div className="text-center md:text-left flex-1">
+                <h1 className="text-2xl md:text-3xl font-bold">{user.email}</h1>
+                <p className="text-muted-foreground mt-1 flex items-center justify-center md:justify-start gap-2">
+                  <Shield className="h-4 w-4" />
+                  Active Account
+                </p>
+                <div className="flex flex-wrap gap-2 mt-4 justify-center md:justify-start">
+                  <span className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full font-medium">
+                    Free Plan
+                  </span>
+                  <span className="px-3 py-1 bg-green-500/10 text-green-600 text-sm rounded-full font-medium flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" />
+                    Verified
+                  </span>
+                </div>
+              </div>
+              <Button variant="outline" size="icon" className="hidden md:flex">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </div>
 
+            {/* Info Cards */}
             <div className="grid gap-4 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Mail className="h-5 w-5" />
-                    Email
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">{user.email}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {user.email_confirmed_at ? "Verified" : "Not verified"}
-                  </p>
+              <Card className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="p-5 bg-gradient-to-r from-blue-500/10 to-transparent">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                        <Mail className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Email Address</p>
+                        <p className="font-semibold">{user.email}</p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Calendar className="h-5 w-5" />
-                    Member Since
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">
-                    {new Date(user.created_at).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
+              <Card className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="p-5 bg-gradient-to-r from-purple-500/10 to-transparent">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                        <Calendar className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Member Since</p>
+                        <p className="font-semibold">
+                          {new Date(user.created_at).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Shield className="h-5 w-5" />
-                    Security
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">Last sign in</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {user.last_sign_in_at
-                      ? new Date(user.last_sign_in_at).toLocaleString()
-                      : "Never"}
-                  </p>
+              <Card className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="p-5 bg-gradient-to-r from-green-500/10 to-transparent">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                        <Shield className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Account Status</p>
+                        <p className="font-semibold text-green-600">Active & Secure</p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Shield className="h-5 w-5" />
-                    Account Status
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm font-medium text-green-500">Active</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Account is in good standing
-                  </p>
+              <Card className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="p-5 bg-gradient-to-r from-orange-500/10 to-transparent">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                        <Clock className="h-5 w-5 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Last Sign In</p>
+                        <p className="font-semibold">
+                          {user.last_sign_in_at
+                            ? new Date(user.last_sign_in_at).toLocaleString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "Never"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
 
+            {/* Legal Section */}
+            <Card>
+              <CardContent className="p-5">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Legal & Policies
+                </h3>
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => navigate("/privacy")}
+                    variant="ghost"
+                    className="w-full justify-start h-12 hover:bg-muted"
+                  >
+                    <Lock className="h-4 w-4 mr-3 text-muted-foreground" />
+                    <span>Privacy Policy</span>
+                  </Button>
+                  <Separator />
+                  <Button
+                    onClick={() => navigate("/terms")}
+                    variant="ghost"
+                    className="w-full justify-start h-12 hover:bg-muted"
+                  >
+                    <FileText className="h-4 w-4 mr-3 text-muted-foreground" />
+                    <span>Terms & Conditions</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Logout Button */}
             <Button
               onClick={handleLogout}
               variant="destructive"
-              className="w-full mt-6"
+              className="w-full h-12 text-base font-semibold"
             >
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
+              <LogOut className="mr-2 h-5 w-5" />
+              Sign Out
             </Button>
-
-            <div className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Legal</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button
-                    onClick={() => navigate("/privacy")}
-                    variant="outline"
-                    className="w-full justify-start"
-                  >
-                    <Lock className="h-4 w-4 mr-2" />
-                    Privacy Policy
-                  </Button>
-                  <Button
-                    onClick={() => navigate("/terms")}
-                    variant="outline"
-                    className="w-full justify-start"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Terms & Conditions
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </>
+          </div>
         ) : (
           <Card>
             <CardContent className="pt-6 text-center">
@@ -211,8 +230,7 @@ const Profile = () => {
           </Card>
         )}
       </div>
-      <BottomNav />
-    </div>
+    </MainLayout>
   );
 };
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import BottomNav from "@/components/BottomNav";
+import MainLayout from "@/components/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link2, Mail, MessageSquare, Lock, User, Globe, Plus, MoreVertical, Trash2, KeyRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -197,7 +197,7 @@ const Categories = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <MainLayout>
       <div className="container mx-auto px-4 py-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
@@ -444,9 +444,7 @@ const Categories = () => {
           />
         </>
       )}
-
-      <BottomNav />
-    </div>
+    </MainLayout>
   );
 };
 
