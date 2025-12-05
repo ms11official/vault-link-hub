@@ -26,23 +26,32 @@ const AppSidebar = () => {
       {/* Logo/Brand Area */}
       <div className={cn(
         "h-16 flex items-center border-b border-sidebar-border px-4",
-        collapsed ? "justify-center" : "justify-between"
+        collapsed ? "justify-center" : "gap-2"
       )}>
-        {!collapsed ? (
-          <div className="flex items-center gap-2">
+        {!collapsed && (
+          <div className="flex items-center gap-2 flex-1">
             <img src={logo} alt="Databseplus" className="h-8 w-8 object-contain" />
             <span className="text-xl font-bold text-sidebar-foreground">Databseplus</span>
           </div>
-        ) : (
+        )}
+        {collapsed && (
           <img src={logo} alt="Databseplus" className="h-8 w-8 object-contain" />
         )}
+      </div>
+
+      {/* Collapse/Expand Button */}
+      <div className="px-2 py-2 border-b border-sidebar-border">
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent"
+          className={cn(
+            "w-full text-sidebar-foreground hover:bg-sidebar-accent",
+            collapsed ? "justify-center" : "justify-start gap-2"
+          )}
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {!collapsed && <span className="text-sm">Collapse</span>}
         </Button>
       </div>
 
