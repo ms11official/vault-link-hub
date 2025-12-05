@@ -5,10 +5,11 @@ import MainLayout from "@/components/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Calendar, Shield, LogOut, FileText, Lock, CheckCircle, Clock, Settings } from "lucide-react";
+import { Mail, Calendar, Shield, LogOut, FileText, Lock, CheckCircle, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import EditProfileDialog from "@/components/EditProfileDialog";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -48,9 +49,15 @@ const Profile = () => {
     }
   };
 
-  const getInitials = (email: string) => {
+  const getInitials = (email: string, name?: string) => {
+    if (name) {
+      return name.substring(0, 2).toUpperCase();
+    }
     return email.substring(0, 2).toUpperCase();
   };
+
+  const userName = user?.user_metadata?.name;
+  const userAvatar = user?.user_metadata?.avatar;
 
   return (
     <MainLayout>
@@ -73,7 +80,7 @@ const Profile = () => {
               <div className="relative">
                 <Avatar className="h-28 w-28 ring-4 ring-primary/10">
                   <AvatarFallback className="text-3xl font-bold bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
-                    {getInitials(user.email || "")}
+                    {userAvatar || getInitials(user.email || "", userName)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-1 -right-1 bg-green-500 h-6 w-6 rounded-full border-4 border-background flex items-center justify-center">
@@ -81,7 +88,8 @@ const Profile = () => {
                 </div>
               </div>
               <div className="text-center md:text-left flex-1">
-                <h1 className="text-2xl md:text-3xl font-bold">{user.email}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold">{userName || user.email}</h1>
+                {userName && <p className="text-muted-foreground">{user.email}</p>}
                 <p className="text-muted-foreground mt-1 flex items-center justify-center md:justify-start gap-2">
                   <Shield className="h-4 w-4" />
                   Active Account
@@ -96,9 +104,7 @@ const Profile = () => {
                   </span>
                 </div>
               </div>
-              <Button variant="outline" size="icon" className="hidden md:flex">
-                <Settings className="h-4 w-4" />
-              </Button>
+              <EditProfileDialog user={user} onProfileUpdated={fetchUser} />
             </div>
 
             {/* Info Cards */}
