@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Search, Shield } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import logo from "@/assets/logo.png";
 
 interface NavbarProps {
   onSearch?: (query: string) => void;
@@ -24,7 +25,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Shield className="h-8 w-8 text-primary" />
+            <img src={logo} alt="Databseplus" className="h-10 w-10 object-contain" />
             <span className="text-xl font-bold text-foreground">Databseplus</span>
           </div>
           

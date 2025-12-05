@@ -3,6 +3,7 @@ import { Home, FolderOpen, Wrench, User, ChevronLeft, ChevronRight } from "lucid
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/contexts/SidebarContext";
+import logo from "@/assets/logo.png";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -27,8 +28,13 @@ const AppSidebar = () => {
         "h-16 flex items-center border-b border-sidebar-border px-4",
         collapsed ? "justify-center" : "justify-between"
       )}>
-        {!collapsed && (
-          <span className="text-xl font-bold text-sidebar-foreground">Databseplus</span>
+        {!collapsed ? (
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="Databseplus" className="h-8 w-8 object-contain" />
+            <span className="text-xl font-bold text-sidebar-foreground">Databseplus</span>
+          </div>
+        ) : (
+          <img src={logo} alt="Databseplus" className="h-8 w-8 object-contain" />
         )}
         <Button
           variant="ghost"
