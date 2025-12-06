@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, User, Lock, Image } from "lucide-react";
+import { Pencil, User, Lock, Image, Upload, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface EditProfileDialogProps {
@@ -21,17 +21,79 @@ const EditProfileDialog = ({ user, onProfileUpdated }: EditProfileDialogProps) =
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [name, setName] = useState(user?.user_metadata?.name || "");
   const [selectedAvatar, setSelectedAvatar] = useState(user?.user_metadata?.avatar || "");
+  const [avatarUrl, setAvatarUrl] = useState(user?.user_metadata?.avatar_url || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "Image size should be less than 2MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/avatar.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      setAvatarUrl(publicUrl + `?t=${Date.now()}`);
+      setSelectedAvatar("");
+      
+      toast({
+        title: "Success",
+        description: "Photo uploaded successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to upload photo",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removePhoto = () => {
+    setAvatarUrl("");
+  };
 
   const handleUpdateProfile = async () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({
-        data: { name, avatar: selectedAvatar }
+        data: { name, avatar: selectedAvatar, avatar_url: avatarUrl }
       });
       
       if (error) throw error;
@@ -138,16 +200,71 @@ const EditProfileDialog = ({ user, onProfileUpdated }: EditProfileDialogProps) =
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <Image className="h-4 w-4" />
-                Profile Avatar
+                Profile Photo
               </Label>
+              
+              <div className="flex items-center gap-4">
+                {avatarUrl ? (
+                  <div className="relative">
+                    <img 
+                      src={avatarUrl} 
+                      alt="Profile" 
+                      className="h-16 w-16 rounded-full object-cover border-2 border-primary"
+                    />
+                    <button
+                      type="button"
+                      onClick={removePhoto}
+                      className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : selectedAvatar ? (
+                  <div className="h-16 w-16 rounded-full border-2 border-primary bg-primary/10 flex items-center justify-center text-2xl">
+                    {selectedAvatar}
+                  </div>
+                ) : (
+                  <div className="h-16 w-16 rounded-full border-2 border-dashed border-muted-foreground/50 flex items-center justify-center">
+                    <User className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                )}
+                
+                <div className="flex flex-col gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="gap-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    {uploading ? "Uploading..." : "Upload Photo"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Or choose an emoji avatar</Label>
               <div className="grid grid-cols-6 gap-2">
                 {avatarOptions.map((avatar) => (
                   <button
                     key={avatar}
                     type="button"
-                    onClick={() => setSelectedAvatar(avatar)}
-                    className={`h-12 w-12 text-2xl rounded-lg border-2 transition-all hover:scale-105 ${
-                      selectedAvatar === avatar
+                    onClick={() => {
+                      setSelectedAvatar(avatar);
+                      setAvatarUrl("");
+                    }}
+                    className={`h-10 w-10 text-xl rounded-lg border-2 transition-all hover:scale-105 ${
+                      selectedAvatar === avatar && !avatarUrl
                         ? "border-primary bg-primary/10"
                         : "border-border hover:border-primary/50"
                     }`}
