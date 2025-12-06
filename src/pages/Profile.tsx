@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import MainLayout from "@/components/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mail, Calendar, Shield, LogOut, FileText, Lock, CheckCircle, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
@@ -58,6 +58,7 @@ const Profile = () => {
 
   const userName = user?.user_metadata?.name;
   const userAvatar = user?.user_metadata?.avatar;
+  const userAvatarUrl = user?.user_metadata?.avatar_url;
 
   return (
     <MainLayout>
@@ -79,6 +80,9 @@ const Profile = () => {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <div className="relative">
                 <Avatar className="h-28 w-28 ring-4 ring-primary/10">
+                  {userAvatarUrl && (
+                    <AvatarImage src={userAvatarUrl} alt="Profile" className="object-cover" />
+                  )}
                   <AvatarFallback className="text-3xl font-bold bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
                     {userAvatar || getInitials(user.email || "", userName)}
                   </AvatarFallback>
