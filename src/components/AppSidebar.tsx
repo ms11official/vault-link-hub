@@ -1,13 +1,19 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, FolderOpen, Wrench, User, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, FolderOpen, Wrench, User, ChevronLeft, ChevronRight, PanelLeftClose, PanelLeft, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/contexts/SidebarContext";
+import { useSidebar, SidebarMode } from "@/contexts/SidebarContext";
 import logo from "@/assets/logo.png";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const AppSidebar = () => {
   const location = useLocation();
-  const { collapsed, setCollapsed } = useSidebar();
+  const { collapsed, mode, setMode, setIsHovering } = useSidebar();
 
   const navItems = [
     { path: "/", icon: Home, label: "Home" },
@@ -16,12 +22,20 @@ const AppSidebar = () => {
     { path: "/profile", icon: User, label: "Profile" },
   ];
 
+  const modeOptions: { value: SidebarMode; label: string }[] = [
+    { value: "expanded", label: "Expanded" },
+    { value: "collapsed", label: "Collapsed" },
+    { value: "hover", label: "Expand on hover" },
+  ];
+
   return (
     <aside
       className={cn(
         "hidden md:flex flex-col h-screen bg-sidebar border-r border-sidebar-border fixed left-0 top-0 z-40 transition-all duration-300",
         collapsed ? "w-16" : "w-60"
       )}
+      onMouseEnter={() => mode === "hover" && setIsHovering(true)}
+      onMouseLeave={() => mode === "hover" && setIsHovering(false)}
     >
       {/* Logo/Brand Area */}
       <div className={cn(
@@ -37,22 +51,6 @@ const AppSidebar = () => {
         {collapsed && (
           <img src={logo} alt="Databseplus" className="h-8 w-8 object-contain" />
         )}
-      </div>
-
-      {/* Collapse/Expand Button */}
-      <div className="px-2 py-2 border-b border-sidebar-border">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setCollapsed(!collapsed)}
-          className={cn(
-            "w-full text-sidebar-foreground hover:bg-sidebar-accent",
-            collapsed ? "justify-center" : "justify-start gap-2"
-          )}
-        >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          {!collapsed && <span className="text-sm">Collapse</span>}
-        </Button>
       </div>
 
       {/* Navigation Items */}
@@ -90,13 +88,43 @@ const AppSidebar = () => {
         })}
       </nav>
 
-      {/* Footer */}
+      {/* Footer with Collapse Mode Dropdown */}
       <div className={cn(
         "p-4 border-t border-sidebar-border",
-        collapsed ? "text-center" : ""
+        collapsed ? "flex justify-center" : ""
       )}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "text-sidebar-foreground hover:bg-sidebar-accent",
+                collapsed ? "w-10 h-10 p-0" : "w-full justify-start gap-2"
+              )}
+            >
+              <Settings className="h-4 w-4" />
+              {!collapsed && <span className="text-sm">Sidebar Mode</span>}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align={collapsed ? "center" : "start"} side="top">
+            {modeOptions.map((option) => (
+              <DropdownMenuItem
+                key={option.value}
+                onClick={() => setMode(option.value)}
+                className={cn(
+                  "cursor-pointer",
+                  mode === option.value && "bg-accent"
+                )}
+              >
+                {option.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
         {!collapsed && (
-          <p className="text-xs text-sidebar-foreground/60">© 2024 Databseplus</p>
+          <p className="text-xs text-sidebar-foreground/60 mt-2">© 2024 Databseplus</p>
         )}
       </div>
     </aside>
