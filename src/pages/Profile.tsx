@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import UserToolsSection from "@/components/UserToolsSection";
+import DataExportSection from "@/components/DataExportSection";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -196,6 +197,9 @@ const Profile = () => {
 
             {/* User Tools Section */}
             <UserToolsSection userId={user.id} />
+
+            {/* Data Export Section */}
+            <DataExportSection userId={user.id} />
 
             {/* Legal Section */}
             <Card>
