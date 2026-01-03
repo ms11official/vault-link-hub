@@ -25,6 +25,7 @@ import Privacy from "./pages/Privacy";
 import TermsConditions from "./pages/TermsConditions";
 import InstallPWABanner from "./components/InstallPWABanner";
 import AuthSuggestionBanner from "./components/AuthSuggestionBanner";
+import KeyboardShortcutsProvider from "./components/KeyboardShortcutsProvider";
 
 const queryClient = new QueryClient();
 
@@ -66,27 +67,29 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthSuggestionBanner />
-        <InstallPWABanner />
-        <Routes>
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-          <Route path="/links" element={<ProtectedRoute><Links /></ProtectedRoute>} />
-          <Route path="/emails" element={<ProtectedRoute><Emails /></ProtectedRoute>} />
-          <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-          <Route path="/passwords" element={<ProtectedRoute><Passwords /></ProtectedRoute>} />
-          <Route path="/contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
-          <Route path="/weburls" element={<ProtectedRoute><WebUrls /></ProtectedRoute>} />
-          <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
-          <Route path="/categories/:categoryId" element={<ProtectedRoute><CategoryDetails /></ProtectedRoute>} />
-          <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
-          <Route path="/tools/:toolId" element={<ProtectedRoute><ToolDetails /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<TermsConditions />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <KeyboardShortcutsProvider>
+          <AuthSuggestionBanner />
+          <InstallPWABanner />
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/links" element={<ProtectedRoute><Links /></ProtectedRoute>} />
+            <Route path="/emails" element={<ProtectedRoute><Emails /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+            <Route path="/passwords" element={<ProtectedRoute><Passwords /></ProtectedRoute>} />
+            <Route path="/contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
+            <Route path="/weburls" element={<ProtectedRoute><WebUrls /></ProtectedRoute>} />
+            <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
+            <Route path="/categories/:categoryId" element={<ProtectedRoute><CategoryDetails /></ProtectedRoute>} />
+            <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
+            <Route path="/tools/:toolId" element={<ProtectedRoute><ToolDetails /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<TermsConditions />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </KeyboardShortcutsProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
