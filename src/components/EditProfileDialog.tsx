@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Pencil, User, Lock, Image, Upload, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ImageCropper from "./ImageCropper";
 
 interface EditProfileDialogProps {
   user: any;
@@ -29,8 +30,10 @@ const EditProfileDialog = ({ user, onProfileUpdated }: EditProfileDialogProps) =
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string>("");
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -43,23 +46,37 @@ const EditProfileDialog = ({ user, onProfileUpdated }: EditProfileDialogProps) =
       return;
     }
 
-    if (file.size > 2 * 1024 * 1024) {
+    if (file.size > 5 * 1024 * 1024) {
       toast({
         title: "Error",
-        description: "Image size should be less than 2MB",
+        description: "Image size should be less than 5MB",
         variant: "destructive",
       });
       return;
     }
 
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageToCrop(reader.result as string);
+      setCropperOpen(true);
+    };
+    reader.readAsDataURL(file);
+    
+    // Reset input so same file can be selected again
+    e.target.value = "";
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    setCropperOpen(false);
+    setImageToCrop("");
     setUploading(true);
+
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/avatar.${fileExt}`;
+      const fileName = `${user.id}/avatar.jpg`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, croppedBlob, { upsert: true, contentType: 'image/jpeg' });
 
       if (uploadError) throw uploadError;
 
@@ -234,8 +251,17 @@ const EditProfileDialog = ({ user, onProfileUpdated }: EditProfileDialogProps) =
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    onChange={handleFileUpload}
+                    onChange={handleFileSelect}
                     className="hidden"
+                  />
+                  <ImageCropper
+                    imageSrc={imageToCrop}
+                    open={cropperOpen}
+                    onClose={() => {
+                      setCropperOpen(false);
+                      setImageToCrop("");
+                    }}
+                    onCropComplete={handleCropComplete}
                   />
                   <Button
                     type="button"

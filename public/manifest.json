@@ -1,0 +1,43 @@
+{
+  "name": "Data Manager Pro",
+  "short_name": "DataManager",
+  "description": "Manage your passwords, contacts, emails, and more in one secure place",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Passwords",
+      "url": "/passwords",
+      "description": "Manage your passwords"
+    },
+    {
+      "name": "Categories",
+      "url": "/categories",
+      "description": "Browse categories"
+    },
+    {
+      "name": "Tools",
+      "url": "/tools",
+      "description": "Access useful tools"
+    }
+  ]
+}

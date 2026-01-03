@@ -23,6 +23,8 @@ import NotFound from "./pages/NotFound";
 import SearchResults from "./pages/SearchResults";
 import Privacy from "./pages/Privacy";
 import TermsConditions from "./pages/TermsConditions";
+import InstallPWABanner from "./components/InstallPWABanner";
+import AuthSuggestionBanner from "./components/AuthSuggestionBanner";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +66,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AuthSuggestionBanner />
+        <InstallPWABanner />
         <Routes>
           <Route path="/auth" element={<Auth />} />
           <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
