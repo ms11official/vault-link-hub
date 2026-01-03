@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import EditProfileDialog from "@/components/EditProfileDialog";
+import UserToolsSection from "@/components/UserToolsSection";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -192,6 +193,9 @@ const Profile = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* User Tools Section */}
+            <UserToolsSection userId={user.id} />
 
             {/* Legal Section */}
             <Card>
