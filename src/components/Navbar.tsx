@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import ThemeToggle from "@/components/ThemeToggle";
 import logo from "@/assets/logo.png";
 
 interface NavbarProps {
@@ -29,18 +30,19 @@ const Navbar = ({ onSearch }: NavbarProps) => {
             <span className="text-xl font-bold text-foreground">Databseplus</span>
           </div>
           
-          <div className="flex-1 max-w-md ml-auto">
-            <div className="relative">
+          <div className="flex-1 max-w-md ml-auto flex items-center gap-2">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search your vault..."
+                placeholder="Search... (Ctrl+K)"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onKeyPress={handleKeyPress}
                 className="pl-10"
               />
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </div>

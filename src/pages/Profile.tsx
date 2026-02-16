@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import UserToolsSection from "@/components/UserToolsSection";
 import DataExportSection from "@/components/DataExportSection";
+import AISettingsSection from "@/components/AISettingsSection";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -194,6 +195,9 @@ const Profile = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* AI Settings Section */}
+            <AISettingsSection userId={user.id} />
 
             {/* User Tools Section */}
             <UserToolsSection userId={user.id} />
