@@ -26,6 +26,9 @@ import TermsConditions from "./pages/TermsConditions";
 import InstallPWABanner from "./components/InstallPWABanner";
 import AuthSuggestionBanner from "./components/AuthSuggestionBanner";
 import KeyboardShortcutsProvider from "./components/KeyboardShortcutsProvider";
+import CommandPalette from "./components/CommandPalette";
+import KeyboardShortcutsDialog from "./components/KeyboardShortcutsDialog";
+import AIChatAssistant from "./components/AIChatAssistant";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +73,9 @@ const App = () => (
         <KeyboardShortcutsProvider>
           <AuthSuggestionBanner />
           <InstallPWABanner />
+          <CommandPalette />
+          <KeyboardShortcutsDialog />
+          <AIChatAssistant />
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />

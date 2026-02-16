@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PasswordInput } from "@/components/PasswordInput";
-import { Plus, Upload } from "lucide-react";
+import { Plus, Upload, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import AIActionButton from "@/components/AIActionButton";
 
 type ItemType = "link" | "email" | "message" | "password" | "contact" | "weburl";
 
@@ -136,7 +137,16 @@ const AddItemDialog = ({ type, onSuccess, categoryId, triggerButton }: AddItemDi
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="title">Title</Label>
+              <AIActionButton
+                action="generate-title"
+                content={content || type}
+                label="AI Title"
+                size="sm"
+                onResult={(result) => setTitle(result.trim())}
+              />
+            </div>
             <Input
               id="title"
               value={title}
@@ -177,7 +187,18 @@ const AddItemDialog = ({ type, onSuccess, categoryId, triggerButton }: AddItemDi
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="content">Content</Label>
+              {type === "email" && (
+                <AIActionButton action="draft-email" content={title || "professional email"} label="AI Draft" size="sm" onResult={(r) => setContent(r)} />
+              )}
+              {type === "message" && (
+                <AIActionButton action="draft-message" content={title || "message"} label="AI Draft" size="sm" onResult={(r) => setContent(r)} />
+              )}
+              {type === "password" && (
+                <AIActionButton action="generate-password" content="" label="Generate" size="sm" onResult={(r) => setContent(r.trim())} />
+              )}
+            </div>
             <Textarea
               id="content"
               value={content}
@@ -186,7 +207,6 @@ const AddItemDialog = ({ type, onSuccess, categoryId, triggerButton }: AddItemDi
               required={!file}
             />
           </div>
-
           {type === "email" && (
             <div className="space-y-2">
               <Label htmlFor="emailPassword">Email Password (Optional)</Label>
