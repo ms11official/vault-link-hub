@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import SearchResults from "./pages/SearchResults";
+import DuplicateDetection from "./pages/DuplicateDetection";
 import Privacy from "./pages/Privacy";
 import TermsConditions from "./pages/TermsConditions";
 import InstallPWABanner from "./components/InstallPWABanner";
@@ -91,6 +92,7 @@ const App = () => (
             <Route path="/tools/:toolId" element={<ProtectedRoute><ToolDetails /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
+            <Route path="/duplicates" element={<ProtectedRoute><DuplicateDetection /></ProtectedRoute>} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<TermsConditions />} />
             <Route path="*" element={<NotFound />} />
