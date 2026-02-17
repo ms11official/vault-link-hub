@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import CommentSection from "./CommentSection";
 import ItemDetailsDialog from "./ItemDetailsDialog";
+import AIActionButton from "./AIActionButton";
 
 interface ItemCardProps {
   id: string;
@@ -22,6 +23,7 @@ interface ItemCardProps {
 const ItemCard = ({ id, title, content, createdAt, type, metadata, category_id, onDelete, onUpdate }: ItemCardProps) => {
   const { toast } = useToast();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
 
   const handleDelete = async () => {
     try {
@@ -70,6 +72,25 @@ const ItemCard = ({ id, title, content, createdAt, type, metadata, category_id, 
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground break-all">{content}</p>
+          {summary && (
+            <div className="mt-2 p-2 rounded-md bg-primary/5 border border-primary/10">
+              <p className="text-xs font-medium text-primary mb-1">AI Summary</p>
+              <p className="text-xs text-muted-foreground">{summary}</p>
+            </div>
+          )}
+          {content.length > 100 && (
+            <div className="mt-2">
+              <AIActionButton
+                action="summarize"
+                content={content}
+                label={summary ? "Re-summarize" : "Summarize"}
+                onResult={(result) => setSummary(result)}
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs"
+              />
+            </div>
+          )}
           <p className="text-xs text-muted-foreground mt-2">
             {new Date(createdAt).toLocaleDateString()}
           </p>

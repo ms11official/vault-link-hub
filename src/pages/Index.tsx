@@ -7,6 +7,7 @@ import { Link2, Mail, MessageSquare, Lock, User, Globe, Clock, TrendingUp } from
 import { Link, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import SmartSuggestions from "@/components/SmartSuggestions";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -120,6 +121,9 @@ const Index = () => {
             {heroTexts[heroText]}
           </p>
         </div>
+
+        {/* Smart Suggestions */}
+        <SmartSuggestions />
 
         {/* Recent Categories */}
         {recentCategories.length > 0 && (
